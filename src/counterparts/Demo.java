@@ -6,14 +6,19 @@
 package counterparts;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.core.Core;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 public class Demo {
 
@@ -26,23 +31,11 @@ public class Demo {
         Mat image = Imgcodecs.imread(".\\src\\com\\edu\\sliit\\img\\brailee.jpg", 1);
         System.out.println("Width : "+image.width());
         System.out.println("Height  : "+image.height());
-        //List<MatOfPoint> ret=new SketchRecognition(image).findRectangle();
-        HashMap<Integer, double[]> findRectangle = new BraileeDetect(image).findRectangle();  
-        HashMap<Double, ArrayList<Double>> findAverageXCordinates = new FindXCordinates().findAverageXCordinates(findRectangle);
-                
-        // how to iterate a Hashmap
-        Iterator hmIterator = findAverageXCordinates.entrySet().iterator();
-        int a=1;
-        while (hmIterator.hasNext()) { 
-            Map.Entry mapElement = (Map.Entry)hmIterator.next(); 
-            ArrayList<Double> cordinates = ( (ArrayList<Double>)mapElement.getValue()); 
-            System.out.println("Y cordinate : "+mapElement.getKey());
-            for(int i=0;i<cordinates.size();i++){
-                System.out.println("X Cordinates : "+a+" "+cordinates.get(i));
-                 a++;
-            }
-           
-            System.out.println("");
-        } 
+        HashMap<Integer, double[]> findRectangle = new BraileeDetect(image).findRectangle();
+        FindXCordinates f =new FindXCordinates();
+        HashMap<Integer, ArrayList<Double>> findAverageXCordinates = f.findAverageXCordinates(findRectangle);
+        ArrayList<Double> avegXYCordinates = f.getAvegXYCordinates(findAverageXCordinates);
+        //  CountWhireSpots c=new CountWhireSpots();
+        // c.drawALine(avegXYCordinates);
     }
 }

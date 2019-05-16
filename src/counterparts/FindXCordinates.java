@@ -6,53 +6,117 @@
 package counterparts;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class FindXCordinates {
     
-     ArrayList<Double> dupicates=new ArrayList<>();
-     ArrayList<Double> unikeYcordinates=new ArrayList<>();
+     ArrayList<Double> dupicates=new ArrayList<>();//Store Y cordinates with Duplicates
+     ArrayList<Double> unikeYcordinates=new ArrayList<>();//Unike Y cordinates for Each Dot
+     
+     ArrayList<Double> dupicatesX=new ArrayList<>();//Store x cordinates with Duplicates
+     ArrayList<Double> unikeXcordinates=new ArrayList<>();//Unike x cordinates for Each Dot
     
-    public HashMap<Double, ArrayList<Double>> findAverageXCordinates(HashMap<Integer, double[]> findRectangle){
-        HashMap<Double, ArrayList<Double>> xCordinates = new HashMap<Double, ArrayList<Double>>();
+    //Geting X and Y Cordinates with no duplicates and Assending Order 
+    public HashMap<Integer, ArrayList<Double>> findAverageXCordinates(HashMap<Integer, double[]> findRectangle){
+        HashMap<Integer, ArrayList<Double>> xyCordinates = new HashMap<Integer, ArrayList<Double>>();
         Iterator hmIterator = findRectangle.entrySet().iterator();
         while (hmIterator.hasNext()) { 
             Map.Entry mapElement = (Map.Entry)hmIterator.next(); 
             double[] cordinates = ((double[])mapElement.getValue());
-            dupicates.add(cordinates[1]);
+            dupicates.add(cordinates[1]);//Getting Y cordinates
+            dupicatesX.add(cordinates[0]);//Getting X cordinates
         }
-        unikeYcordinates=removeDuplicates(dupicates);
-        for(int i=0;i<unikeYcordinates.size();i++){
-            ArrayList<Double> xcordinatesForGivent = getXcordinatesForGivent(findRectangle,unikeYcordinates.get(i));
-            xCordinates.put(unikeYcordinates.get(i), xcordinatesForGivent);
-        }
-        return xCordinates;
+        unikeYcordinates=removeDuplicates(dupicates);//Remove Y cordinates Duplicates
+        unikeXcordinates = removeDuplicates(dupicatesX);//Remove X cordinates Duplicates
+        Collections.sort(unikeYcordinates);//Sorting the Array
+        Collections.sort(unikeXcordinates);//Sorting the Array 
+        arrayListPrint(unikeXcordinates);
+        xyCordinates.put(0, unikeXcordinates);//Draw top To Bottom
+        xyCordinates.put(1, unikeYcordinates);//Draw left to Right
+        return xyCordinates;
+//        for(int i=0;i<unikeYcordinates.size();i++){
+//            ArrayList<Double> xcordinatesForGivent = getXcordinatesForGivent(findRectangle,unikeYcordinates.get(i));//Geting X cordinates for Giving Unike Y Cordinates
+//            xCordinates.put(unikeYcordinates.get(i), xcordinatesForGivent);
+//        }           
     }
     
     //Remove Duplicates
-    public static <T> ArrayList<T> removeDuplicates(ArrayList<T> list) 
-    { 
+    public static <T> ArrayList<T> removeDuplicates(ArrayList<T> list) { 
         // Create a new ArrayList 
         ArrayList<T> newList = new ArrayList<T>(); 
-  
         // Traverse through the first list 
         for (T element : list) { 
-  
             // If this element is not present in newList 
             // then add it 
             if (!newList.contains(element)) { 
-  
                 newList.add(element); 
             } 
         } 
-  
         // return the new list 
         return newList; 
     } 
     
+    //Getting X and Y Cordinates Averages
+    public ArrayList<Double> getAvegXYCordinates(HashMap<Integer, ArrayList<Double>> findAverageXCordinates){
+        Iterator hmIterator = findAverageXCordinates.entrySet().iterator();
+        int a=0;
+        ArrayList<Double> avegXYCordinates=null;
+        while (hmIterator.hasNext()) {
+             Map.Entry mapElement = (Map.Entry)hmIterator.next();
+             ArrayList<Double> cordinates = ( (ArrayList<Double>)mapElement.getValue());//1 St iteratin get X cordinates 2nd Y cordinates
+             if(a==0){ //a==0 for Y a==1 for x
+                 //arrayListPrint(cordinates);
+                 //System.out.println("");
+                 avegXYCordinates = getAvegXYCordinates(cordinates,1.5);
+                 //avegXYCordinates = getAvegXYCordinates(cordinates,2.8);
+                 //arrayListPrint(avegXYCordinates);
+             }
+             a++;   
+        }
+        return avegXYCordinates;
+    }
+    
+    //Calculate Average
+    private ArrayList<Double> getAvegXYCordinates(ArrayList<Double> cordinates,double nextIndex){
+        int startPosition=0;
+        double priviousValue=cordinates.get(0),sum=0,avg=0;
+        ArrayList<Double> avgCordinates=new ArrayList<>();//store Avg Values
+        for (int i = 0; i < cordinates.size(); i++) {
+            sum=sum+cordinates.get(i); // Wrong
+            startPosition++;
+            //System.out.println("privious : "+priviousValue+" Current : "+cordinates.get(i)+ " Difference : "+(cordinates.get(i)-priviousValue) );
+            if(( priviousValue+nextIndex)<cordinates.get(i)){
+                 //Do the Average Calculation
+                 sum=sum-cordinates.get(i);
+                 avg=sum/(startPosition-1);
+                 avgCordinates.add(avg);
+                 avg=0;
+                 startPosition=1;//Start next Episode here
+                 sum=cordinates.get(i);//Start next Episode here
+            }
+            priviousValue=cordinates.get(i);
+        }
+        //Final iterations does not find priviousValue+2.8
+        avg=sum/startPosition;
+        avgCordinates.add(avg);
+        return avgCordinates;
+    }
+    
+    //Testing purpose prinyt Array List
+    private void arrayListPrint(ArrayList<Double> cordinates){
+        for (int i = 0; i < cordinates.size(); i++) {
+            System.out.print(cordinates.get(i)+",");           
+        }
+    }
+    
+    
+    
+    
+    //Not use ful
+    //Geting X cordinates for Giving Unike Y Cordinates
     private ArrayList<Double> getXcordinatesForGivent(HashMap<Integer, double[]> findRectangle,double yCordinate){
         ArrayList<Double> xCordinates=new ArrayList<>();
         Iterator hmIterator = findRectangle.entrySet().iterator();
